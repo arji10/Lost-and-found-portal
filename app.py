@@ -11,9 +11,10 @@ from datetime import datetime
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-999')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-app.config['UPLOAD_FOLDER'] = 'static/uploads'
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB upload limit
+basedir = os.path.abspath(os.path.dirname(__file__))
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'database.db')
+app.config['UPLOAD_FOLDER'] = os.path.join(basedir, 'static', 'uploads')
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 db = SQLAlchemy(app)
 
@@ -174,12 +175,15 @@ def browse():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form.get('email')
+        email = request.form.get('email', '').strip().lower()
         password = request.form.get('password')
         user = User.query.filter_by(email=email).first()
-        print(f"LOGIN ATTEMPT: Email={email}, Found User={bool(user)}")
+        print(f"DEBUG: Login try for {email}. Found={bool(user)}", flush=True)
         
         if not user:
+            # Check if any user exists at all
+            user_count = User.query.count()
+            print(f"DEBUG: Total users in DB: {user_count}", flush=True)
             flash(f'No account found with email: {email}', 'warning')
         elif not check_password_hash(user.password, password):
             flash('Incorrect password. Please try again.', 'danger')
@@ -225,10 +229,10 @@ def mark_returned(item_id):
 # Initialize Database & Auto-Seed Admin
 with app.app_context():
     db.create_all()
-    # Auto-create admin if not exists by email
-    admin_user = User.query.filter_by(email='admin@example.com').first()
-    if not admin_user:
-        print("SEEDING: Admin account not found. Creating default admin...")
+    # Check if admin exists specifically by email
+    admin_check = User.query.filter_by(email='admin@example.com').first()
+    if not admin_check:
+        print("SEEDING: Creating default admin account...", flush=True)
         admin = User(
             name="Admin User",
             email="admin@example.com",
@@ -237,9 +241,9 @@ with app.app_context():
         )
         db.session.add(admin)
         db.session.commit()
-        print("SEEDING: Default admin created successfully (admin@example.com / admin123)")
+        print("SEEDING: Admin created: admin@example.com / admin123", flush=True)
     else:
-        print("SEEDING: Admin account already exists.")
+        print(f"SEEDING: Admin already exists ({admin_check.email})", flush=True)
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5001))
