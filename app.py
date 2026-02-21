@@ -177,6 +177,8 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
         user = User.query.filter_by(email=email).first()
+        print(f"LOGIN ATTEMPT: Email={email}, Found User={bool(user)}")
+        
         if not user:
             flash(f'No account found with email: {email}', 'warning')
         elif not check_password_hash(user.password, password):
@@ -223,9 +225,10 @@ def mark_returned(item_id):
 # Initialize Database & Auto-Seed Admin
 with app.app_context():
     db.create_all()
-    # Auto-create admin if not exists
-    admin_exists = User.query.filter_by(role='admin').first()
-    if not admin_exists:
+    # Auto-create admin if not exists by email
+    admin_user = User.query.filter_by(email='admin@example.com').first()
+    if not admin_user:
+        print("SEEDING: Admin account not found. Creating default admin...")
         admin = User(
             name="Admin User",
             email="admin@example.com",
@@ -234,7 +237,9 @@ with app.app_context():
         )
         db.session.add(admin)
         db.session.commit()
-        print("Default admin created successfully.")
+        print("SEEDING: Default admin created successfully (admin@example.com / admin123)")
+    else:
+        print("SEEDING: Admin account already exists.")
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5001))
