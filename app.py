@@ -10,7 +10,7 @@ import os
 from datetime import datetime
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your-secret-key-here'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-999')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB upload limit
@@ -220,9 +220,21 @@ def mark_returned(item_id):
     flash('Item marked as returned', 'info')
     return redirect(url_for('admin_panel'))
 
-# Initialize Database
+# Initialize Database & Auto-Seed Admin
 with app.app_context():
     db.create_all()
+    # Auto-create admin if not exists
+    admin_exists = User.query.filter_by(role='admin').first()
+    if not admin_exists:
+        admin = User(
+            name="Admin User",
+            email="admin@example.com",
+            password=generate_password_hash("admin123", method='pbkdf2:sha256'),
+            role="admin"
+        )
+        db.session.add(admin)
+        db.session.commit()
+        print("Default admin created successfully.")
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5001))
