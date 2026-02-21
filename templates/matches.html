@@ -32,11 +32,10 @@
                         <p class="mb-1"><strong>Location:</strong> {{ match.item.location }}</p>
                         <p class="mb-1"><strong>Found on:</strong> {{ match.item.date.strftime('%Y-%m-%d') }}</p>
                     </div>
-                    <div class="p-3 bg-light rounded-3 mb-3">
+                    <div class="p-3 bg-light rounded-3">
                         <h6 class="fw-bold mb-1">Finder Contact:</h6>
                         <p class="mb-0 text-primary fw-bold">{{ match.item.contact }}</p>
                     </div>
-                    <a href="mailto:{{ match.item.contact }}" class="btn btn-primary w-100">This is my item!</a>
                 </div>
             </div>
         </div>

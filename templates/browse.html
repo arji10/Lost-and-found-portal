@@ -53,14 +53,6 @@
                         <p class="mb-1"><strong><i class="bi bi-geo-alt"></i> Location:</strong> {{ item.location }}</p>
                         <p class="mb-3"><strong><i class="bi bi-person"></i> Contact:</strong> {{ item.contact }}</p>
                     </div>
-
-                    {% if item.status == 'returned' %}
-                    <div class="alert alert-info py-2 mb-0 text-center">
-                        <small class="fw-bold">Marked as Returned</small>
-                    </div>
-                    {% else %}
-                    <a href="mailto:{{ item.contact }}" class="btn btn-primary w-100">Contact Poster</a>
-                    {% endif %}
                 </div>
             </div>
         </div>
