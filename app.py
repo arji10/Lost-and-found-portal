@@ -177,15 +177,16 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
         user = User.query.filter_by(email=email).first()
-        
-        if user and check_password_hash(user.password, password):
-            if user.role != 'admin':
-                flash('Only administrators can access the dashboard.', 'danger')
-                return redirect(url_for('login'))
-            login_user(user)
-            return redirect(url_for('admin_panel'))
+        if not user:
+            flash(f'No account found with email: {email}', 'warning')
+        elif not check_password_hash(user.password, password):
+            flash('Incorrect password. Please try again.', 'danger')
+        elif user.role != 'admin':
+            flash('Access denied. This area is for administrators only.', 'danger')
         else:
-            flash('Invalid email or password.', 'danger')
+            login_user(user)
+            flash(f'Welcome back, {user.name}!', 'success')
+            return redirect(url_for('admin_panel'))
             
     return render_template('login.html')
 

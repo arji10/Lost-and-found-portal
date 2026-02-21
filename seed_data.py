@@ -12,7 +12,7 @@ def seed():
         admin = User(
             name="Admin User",
             email="admin@example.com",
-            password=generate_password_hash("admin123"),
+            password=generate_password_hash("admin123", method='pbkdf2:sha256'),
             role="admin"
         )
         db.session.add(admin)
