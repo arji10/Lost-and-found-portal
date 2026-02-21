@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5 fade-in">
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold text-primary mb-2">Smart Matching System</h1>
+        <p class="lead text-muted">Our AI analyzed your description and found these possible matches.</p>
+    </div>
+
+    <div class="row justify-content-center g-4">
+        {% if matches %}
+        {% for match in matches %}
+        <div class="col-md-4">
+            <div class="card item-card border-primary border-2">
+                <div class="position-absolute top-0 end-0 m-3">
+                    <span class="badge bg-primary fs-6">{{ match.similarity }}% Match</span>
+                </div>
+                {% if match.item.image %}
+                {% if match.item.image.startswith('http') %}
+                <img src="{{ match.item.image }}" class="card-img-top" alt="{{ match.item.title }}">
+                {% else %}
+                <img src="{{ url_for('static', filename='uploads/' + match.item.image) }}" class="card-img-top"
+                    alt="{{ match.item.title }}">
+                {% endif %}
+                {% else %}
+                <img src="https://via.placeholder.com/400x300?text=No+Image" class="card-img-top" alt="Placeholder">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title fw-bold">{{ match.item.title }}</h5>
+                    <p class="card-text text-truncate">{{ match.item.description }}</p>
+                    <div class="small mb-3">
+                        <p class="mb-1"><strong>Location:</strong> {{ match.item.location }}</p>
+                        <p class="mb-1"><strong>Found on:</strong> {{ match.item.date.strftime('%Y-%m-%d') }}</p>
+                    </div>
+                    <div class="p-3 bg-light rounded-3 mb-3">
+                        <h6 class="fw-bold mb-1">Finder Contact:</h6>
+                        <p class="mb-0 text-primary fw-bold">{{ match.item.contact }}</p>
+                    </div>
+                    <a href="mailto:{{ match.item.contact }}" class="btn btn-primary w-100">This is my item!</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="col-md-6 text-center">
+            <div class="card shadow border-0 rounded-4 p-5">
+                <div class="display-1 text-muted mb-4">😔</div>
+                <h3>No immediate matches found</h3>
+                <p class="text-muted">We've posted your lost item report. We'll show you results as soon as someone
+                    finds a similar item.</p>
+                <a href="{{ url_for('index') }}" class="btn btn-primary mt-3">Back to Home</a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

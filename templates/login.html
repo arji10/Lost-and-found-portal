@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5 fade-in">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card glass-card shadow-lg p-5">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold text-primary">Admin Login</h2>
+                    <p class="text-muted">Access the Control Center</p>
+                </div>
+
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Email Address</label>
+                        <input type="email" name="email" class="form-control" required placeholder="admin@example.com">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Password</label>
+                        <input type="password" name="password" class="form-control" required placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">Login to Dashboard</button>
+                </form>
+
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('index') }}" class="text-muted small">Return to Portal</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

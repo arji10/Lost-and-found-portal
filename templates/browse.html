@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5 fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="display-5 fw-bold text-primary mb-2">Explore Records</h1>
+            <p class="text-muted lead">Search through all reported lost and found items in our community.</p>
+        </div>
+    </div>
+
+    <!-- Search Section -->
+    <div class="card glass-card shadow-lg p-4 mb-5">
+        <form method="GET" class="row g-3">
+            <div class="col-md-10">
+                <input type="text" name="q" class="form-control form-control-lg border-0 shadow-sm"
+                    placeholder="Search by name, location or description..." value="{{ query }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary btn-lg w-100">Search</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Items Grid -->
+    <div class="row g-4">
+        {% for item in items %}
+        <div class="col-md-4">
+            <div class="card item-card">
+                {% if item.image %}
+                {% if item.image.startswith('http') %}
+                <img src="{{ item.image }}" class="card-img-top" alt="{{ item.title }}">
+                {% else %}
+                <img src="{{ url_for('static', filename='uploads/' + item.image) }}" class="card-img-top"
+                    alt="{{ item.title }}">
+                {% endif %}
+                {% else %}
+                <img src="https://via.placeholder.com/400x300?text=No+Image" class="card-img-top" alt="Placeholder">
+                {% endif %}
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        {% if item.type == 'found' %}
+                        <span class="badge badge-found">Found</span>
+                        {% else %}
+                        <span class="badge badge-lost">Lost</span>
+                        {% endif %}
+                        <small class="text-muted">{{ item.date.strftime('%b %d, %Y') }}</small>
+                    </div>
+                    <h5 class="card-title fw-bold">{{ item.title }}</h5>
+                    <p class="card-text">{{ item.description }}</p>
+                    <hr>
+                    <div class="small">
+                        <p class="mb-1"><strong><i class="bi bi-geo-alt"></i> Location:</strong> {{ item.location }}</p>
+                        <p class="mb-3"><strong><i class="bi bi-person"></i> Contact:</strong> {{ item.contact }}</p>
+                    </div>
+
+                    {% if item.status == 'returned' %}
+                    <div class="alert alert-info py-2 mb-0 text-center">
+                        <small class="fw-bold">Marked as Returned</small>
+                    </div>
+                    {% else %}
+                    <a href="mailto:{{ item.contact }}" class="btn btn-primary w-100">Contact Poster</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12 text-center py-5">
+            <div class="bg-white p-5 rounded-4 shadow-sm">
+                <h3 class="text-muted">No items found matching your search.</h3>
+                <a href="{{ url_for('browse') }}" class="btn btn-link">Clear search</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

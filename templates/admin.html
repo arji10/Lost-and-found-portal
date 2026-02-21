@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5 fade-in">
+    <div class="admin-header d-flex justify-content-between align-items-center mb-4 p-4 glass-card shadow-sm">
+        <div>
+            <h2 class="fw-bold mb-0 text-primary">Control Center</h2>
+            <p class="text-muted mb-0 small">Overview of all lost and found item records.</p>
+        </div>
+        <div class="text-end">
+            <span class="badge bg-primary px-3 py-2 rounded-pill shadow-sm">Live System Status</span>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden" style="background: transparent;">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Item</th>
+                        <th>Type</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                        <th>Posted By</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center">
+                                {% if item.image %}
+                                <img src="{{ url_for('static', filename='uploads/' + item.image) }}" class="rounded"
+                                    style="width: 40px; height: 40px; object-fit: cover;">
+                                {% else %}
+                                <div class="bg-secondary rounded text-white d-flex align-items-center justify-content-center"
+                                    style="width: 40px; height: 40px;">?</div>
+                                {% endif %}
+                                <div class="ms-3">
+                                    <div class="fw-bold">{{ item.title }}</div>
+                                    <small class="text-muted">{{ item.date.strftime('%Y-%m-%d') }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if item.type == 'found' %}
+                            <span class="badge badge-found">Found</span>
+                            {% else %}
+                            <span class="badge badge-lost">Lost</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ item.location }}</td>
+                        <td>
+                            {% if item.status == 'returned' %}
+                            <span class="badge bg-info">Returned</span>
+                            {% else %}
+                            <span class="badge bg-warning text-dark">Available</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ item.reporter_name }}</td>
+                        <td class="text-end pe-4">
+                            {% if item.status != 'returned' %}
+                            <a href="{{ url_for('mark_returned', item_id=item.id) }}"
+                                class="btn btn-sm btn-outline-success me-1">Mark Returned</a>
+                            {% endif %}
+                            <a href="{{ url_for('delete_item', item_id=item.id) }}"
+                                class="btn btn-sm btn-outline-danger"
+                                onclick="return confirm('Are you sure you want to delete this post?')">Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

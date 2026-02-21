@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<header class="hero-section">
+    <div class="container">
+        <h1 class="display-4 fw-bold">Lost Something? Found Something?</h1>
+        <p class="lead mb-4">The smartest way to reconnect people with their lost belongings.</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{{ url_for('post_lost') }}" class="btn btn-light btn-lg">I've Lost Something</a>
+            <a href="{{ url_for('post_found') }}" class="btn btn-outline-light btn-lg">I've Found Something</a>
+        </div>
+    </div>
+</header>
+
+<!-- Search Bar Area -->
+<div class="container mt-n5 mb-5 fade-in" style="margin-top: -60px; position: relative; z-index: 10;">
+    <div class="card glass-card shadow-lg p-4">
+        <form action="{{ url_for('browse') }}" method="GET" class="row g-3">
+            <div class="col-md-9">
+                <input type="text" name="q" class="form-control form-control-lg border-0 shadow-sm"
+                    placeholder="What are you looking for? (e.g. Wallet, iPhone, Blue Bag)">
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary btn-lg w-100">Search Now</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Recent Items -->
+<section class="container mb-5">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h2 class="fw-bold">Recently Found</h2>
+            <p class="text-muted">Take a look at what's been found lately.</p>
+        </div>
+        <a href="{{ url_for('browse') }}" class="btn btn-link">View All Items</a>
+    </div>
+
+    <div class="row g-4">
+        {% for item in recent_found %}
+        <div class="col-md-4">
+            <div class="card item-card">
+                {% if item.image %}
+                {% if item.image.startswith('http') %}
+                <img src="{{ item.image }}" class="card-img-top" alt="{{ item.title }}">
+                {% else %}
+                <img src="{{ url_for('static', filename='uploads/' + item.image) }}" class="card-img-top"
+                    alt="{{ item.title }}">
+                {% endif %}
+                {% else %}
+                <img src="https://via.placeholder.com/400x300?text=No+Image" class="card-img-top" alt="Placeholder">
+                {% endif %}
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge badge-found">Found</span>
+                        <small class="text-muted">{{ item.date.strftime('%b %d, %Y') }}</small>
+                    </div>
+                    <h5 class="card-title fw-bold">{{ item.title }}</h5>
+                    <p class="card-text text-truncate">{{ item.description }}</p>
+                    <div class="text-muted small mb-3">
+                        <i class="bi bi-geo-alt"></i> {{ item.location }}
+                    </div>
+                    <a href="{{ url_for('browse', q=item.title) }}" class="btn btn-outline-primary w-100">View
+                        Details</a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12 text-center py-5">
+            <p class="text-muted">No items found yet. Be the first to post something!</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
